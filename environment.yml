@@ -1,0 +1,31 @@
+
+name: sspcd
+channels:
+  - pytorch
+  - nvidia
+  - defaults
+  - conda-forge
+dependencies:
+  - python=3.8
+  - numpy
+  - pip
+  - tqdm
+  - scipy
+  - h5py
+  - pytorch=1.7.1
+  - torchvision=0.8.2
+  - cudatoolkit=11.0.3
+  - matplotlib
+  - jupyterlab
+  - pillow
+  - glob2
+  - joblib
+  - scikit-learn
+  - tensorboardX
+  - pip:
+    - argparse
+    - easydict
+    - datetime
+    - open3d
+    - jsons
+    - future-fstrings
