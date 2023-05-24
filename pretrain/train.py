@@ -14,27 +14,32 @@ from utils import contrastive_loss
 
 
 def parse_args():
+    
     """PARAMETERS"""
+    
     parser = argparse.ArgumentParser("self supervised parameters")
+    
     parser.add_argument("--feature_dim", default=128, type=int, help="Feature dim for latent vector")
     parser.add_argument("--temperature", default=0.5, type=float, help="Temperature used in softmax")
     parser.add_argument("--batch_size", default=32, type=int, help="Number of images in each mini-batch")
-    parser.add_argument("--num_views", default=12, type=int, help="number of views image")
-    parser.add_argument("--num_point_contrast", default=512, type=int, help="number of views image")
-    parser.add_argument("--num_points", default=1024, type=int, help="number points")
     parser.add_argument("--nepoch", default=400, type=int, help="Number of sweeps over the dataset to train")
-    parser.add_argument("--dataset", type=str, default="../dataset/ModelNet40_blender_sampling_1024", help="Path dataset")
-    parser.add_argument("--log_dir", type=str, default="pre_trained_3d_point", help="folder results")
-    parser.add_argument("--path_model", type=str, default="results_ssl_full32/128_0.5_512_1000_model_epoch_1000.pth", help="path model 2d")
-    parser.add_argument("--model", type=str, default="pointnet", help="model pre-training [pointnet or dgcnn]")
-    parser.add_argument("--pre_fix", type=str, default="../dataset/ModelNet40_MV", help="name folder multi-views")
     parser.add_argument("--emb_dims", type=int, default=1024, metavar="N", help="Dimension of embeddings")
     parser.add_argument("--use_sgd", action="store_true", help="Use SGD")
     parser.add_argument("--fps", type=str, default="random", help="sampling pair, fps, sps or random")
     parser.add_argument("--lr", type=float, default=0.001, metavar="LR", help="learning rate (default: 0.001, 0.1 if using sgd)")
-    parser.add_argument("--k", type=int, default=20, metavar="M", help="number nearest neighboor")
     parser.add_argument("--momentum", type=float, default=0.9, metavar="M", help="SGD momentum (default: 0.9)")
     parser.add_argument("--scheduler", type=str, default="step", metavar="N", choices=["cos", "step", "None"], help="Scheduler to use, [cos, step]")
+    
+    parser.add_argument("--model", type=str, default="pointnet", help="model pre-training [pointnet or dgcnn]")
+    parser.add_argument("--num_views", default=12, type=int, help="number of views image")
+    parser.add_argument("--num_point_contrast", default=512, type=int, help="number of views image")
+    parser.add_argument("--num_points", default=1024, type=int, help="number points")
+    parser.add_argument("--k", type=int, default=20, metavar="M", help="number nearest neighboor")
+    
+    parser.add_argument("--dataset", type=str, default="../dataset/ModelNet40_blender_sampling_1024/ModelNet40_blender_sampling_1024", help="Path dataset")
+    parser.add_argument("--pre_fix", type=str, default="../dataset/ModelNet40_MV/ModelNet40_MV", help="name folder multi-views")
+    parser.add_argument("--log_dir", type=str, default="pre_trained_3d_point", help="folder results")
+    parser.add_argument("--path_model", type=str, default="results_ssl_full32/128_0.5_512_1000_model_epoch_1000.pth", help="path model 2d")
     
     return parser.parse_args()
 
