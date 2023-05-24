@@ -48,6 +48,9 @@ Download code from https://github.com/NVIDIA/MinkowskiEngine/releases/tag/v0.5.0
 ```
 
 ### Datasets
+
+- **Download the dataset from [here](https://drive.google.com/drive/folders/1tHHgeX50e5YhdruxTimWCcWXhkpIOPOo)**
+
 - **Synthetic data**: we evaluate our pre-trained model on two synthetic datasets that include [ModelNet40](https://shapenet.cs.stanford.edu/media/modelnet40_ply_hdf5_2048.zip) for the classification task and [ShapeNetPart](http://web.stanford.edu/~ericyi/project_page/part_annotation/index.html) for the part segmentation task with official training and test sets.
 
 - **Real data**: We also evaluate our pre-trained model on real datasets. Particularly, we use [ScanObjectNN](https://hkust-vgd.github.io/scanobjectnn/) with two variants (without and with background) for the classification task, [S3DIS](http://buildingparser.stanford.edu/dataset.html) and [ScanNet](http://www.scan-net.org/) for the semantic segmentation task, and [ScanNet](http://www.scan-net.org/) and [SUN RGB-D](https://rgbd.cs.princeton.edu/) for the object detection task.
