@@ -1,0 +1,20 @@
+{
+  "feature_dim": 128,
+  "temperature": 0.5,
+  "batch_size": 72,
+  "nepoch": 1,
+  "emb_dims": 1024,
+  "use_sgd": false,
+  "fps": "random",
+  "lr": 0.001,
+  "momentum": 0.9,
+  "scheduler": "step",
+  "model": "pointnet",
+  "num_views": 12,
+  "num_point_contrast": 512,
+  "num_points": 1024,
+  "k": 20,
+  "dataset": "../dataset/ModelNet40_blender_sampling_1024/ModelNet40_blender_sampling_1024",
+  "pre_fix": "ModelNet40_MV",
+  "log_dir": "pre_trained_3d_point"
+}
