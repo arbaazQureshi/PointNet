@@ -39,12 +39,16 @@ def parse_args():
 
 
 def train():
+    
     args = parse_args()
+    
     print(args.manualSeed)
+    
     if args.manualSeed is not None:
         random.seed(args.manualSeed)
         torch.manual_seed(args.manualSeed)
         np.random.seed(args.manualSeed)
+    
     else:
         args.manualSeed = random.randint(1, 10000)  # fix seed
         print("Random Seed: ", args.manualSeed)

@@ -2,7 +2,7 @@
   "feature_dim": 128,
   "temperature": 0.5,
   "batch_size": 72,
-  "nepoch": 1,
+  "nepoch": 100,
   "emb_dims": 1024,
   "use_sgd": false,
   "fps": "random",
