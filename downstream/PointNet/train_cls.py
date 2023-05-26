@@ -18,7 +18,7 @@ def parse_args():
     """PARAMETERS"""
     parser = argparse.ArgumentParser("Classification")
     parser.add_argument("--batch_size", type=int, default=32, help="batch size in training [default: 32]")
-    parser.add_argument("--nepoch", default=250, type=int, help="number of epoch in training [default: 250]")
+    parser.add_argument("--nepoch", default=100, type=int, help="number of epoch in training [default: 250]")
     parser.add_argument(
         "--learning_rate", default=0.001, type=float, help="learning rate in training [default: 0.001]"
     )
@@ -26,8 +26,8 @@ def parse_args():
     parser.add_argument("--optimizer", type=str, default="Adam", help="optimizer for training [default: Adam]")
     parser.add_argument("--log_dir", type=str, default=None, help="experiment root")
     parser.add_argument("--model_path", type=str, default="", help="model pre-trained")
-    parser.add_argument("--dataset_path", type=str, required=True, help="dataset path")
-    parser.add_argument("--dataset_type", type=str, required=True, help="scanobjectnn|modelnet40|scanobjectnn10")
+    parser.add_argument("--dataset_path", type=str, default="/work/nidhichandra_umass_edu/data/ModelNet40_blender_sampling_1024/ModelNet40_blender_sampling_1024", help="dataset path")
+    parser.add_argument("--dataset_type", type=str, default="modelnet40", help="scanobjectnn|modelnet40|scanobjectnn10")
     parser.add_argument("--lr_decay", type=float, default=0.7, help="decay rate for learning rate")
     parser.add_argument("--decay_step", type=int, default=20, help="decay step for ")
     parser.add_argument("--momentum_decay", type=float, default=0.5, help="momentum_decay decay of batchnorm")

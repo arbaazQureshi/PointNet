@@ -1,47 +1,28 @@
 #### Table of contents
 1. [Getting Started](#Getting-Started)
 2. [Experiments](#Experiments)
-3. [Acknowledgments](#Acknowledgments)
-4. [Contacts](#Contacts)
+3. [Acknowledgments](#Contributions)
 
-# Self-Supervised Learning with Multi-View Rendering for 3D Point Cloud Analysis (ACCV 2022)
+# Self-Supervised Pre-Training for 3D Point Networks with Multi-View Rendering
+674 class project
 
-[Bach Tran](https://bachtranxuan.github.io/),
-[Binh-Son Hua](https://sonhua.github.io/),
-[Anh Tuan Tran](https://sites.google.com/site/anhttranusc/),
-[Minh Hoai](https://www3.cs.stonybrook.edu/~minhhoai/)<br>
-VinAI Research, Vietnam
-
-> **Abstract:** 
-Recently, great progress has been made in 3D deep learning with the emergence of deep neural networks specifically designed for 3D point clouds. These networks are often trained from scratch or from pre-trained models learned purely from point cloud data. Inspired by the success of deep learning in the image domain, we devise a novel pre-training technique for better model initialization by utilizing the multi-view rendering of the 3D data. Our pre-training is self-supervised by a local pixel/point level correspondence loss computed from perspective projection and a global image/point cloud level loss based on knowledge distillation, thus effectively improving upon popular point cloud networks, including PointNet, DGCNN and SR-UNet. 
-These improved models outperform existing state-of-the-art methods on various datasets and downstream tasks. We also analyze the benefits of synthetic and real data for pre-training, and observe that pre-training on synthetic data is also useful for high-level downstream tasks.
-
-Details of the model architecture and experimental results can be found in [our following paper](https://arxiv.org/pdf/2210.15904v1.pdf).
-```bibtex
-@inproceedings{tran2022selfsup,
-    title={Self-Supervised Learning with Multi-View Rendering for 3D Point Cloud Analysis},
-    author={Bach Tran and Binh-Son Hua and Anh Tuan Tran and Minh Hoai},
-    booktitle={Proceedings of the Asian Conference on Computer Vision (ACCV)},
-    year={2022}
-}
-```
-**Please CITE** our paper whenever our model implementation is used to help produce published results or incorporated into other software.
+Siddhant Shingi,
+Nidhi Chandra,
+Arbaaz Qureshi,
+<br>
+University of Massachusetts, Amherst
 
 ## Getting Started
-The codebase is tested on
-- Ubuntu
-- CUDA 11.0
-- [MinkowskiEngine](https://github.com/NVIDIA/MinkowskiEngine) v.0.5.0
+
 ### Installation
 
-- Clone this repo:
-``` 
-git clone https://github.com/VinAIResearch/selfsup_pcd.git
-cd selfsup_pcd
+- Download the zip file, unzip to get the code folder
+```bash
+cd self_sup_PC_repr_learning
 ```
 
 - Install dependencies:
-```
+```bash
 conda env create -f environment.yml
 conda activate sspcd
 Download code from https://github.com/NVIDIA/MinkowskiEngine/releases/tag/v0.5.0, compile and install MinkowskiEngine.
@@ -51,27 +32,48 @@ Download code from https://github.com/NVIDIA/MinkowskiEngine/releases/tag/v0.5.0
 
 - **Download the dataset from [here](https://drive.google.com/drive/folders/1tHHgeX50e5YhdruxTimWCcWXhkpIOPOo)**
 
-- **Synthetic data**: we evaluate our pre-trained model on two synthetic datasets that include [ModelNet40](https://shapenet.cs.stanford.edu/media/modelnet40_ply_hdf5_2048.zip) for the classification task and [ShapeNetPart](http://web.stanford.edu/~ericyi/project_page/part_annotation/index.html) for the part segmentation task with official training and test sets.
-
-- **Real data**: We also evaluate our pre-trained model on real datasets. Particularly, we use [ScanObjectNN](https://hkust-vgd.github.io/scanobjectnn/) with two variants (without and with background) for the classification task, [S3DIS](http://buildingparser.stanford.edu/dataset.html) and [ScanNet](http://www.scan-net.org/) for the semantic segmentation task, and [ScanNet](http://www.scan-net.org/) and [SUN RGB-D](https://rgbd.cs.princeton.edu/) for the object detection task.
-
 ## Experiments
 ### Pre-trained Models.
-We also provide official [pre-trained models](https://drive.google.com/drive/folders/11796nNYvQ77XdFwdEXbIX0IZltnXHn4Z?usp=sharing).
+We also provide pretrained models in `pretrain_mod/runs/<model_name>`
+
+Model names:
+* ws_8: window size 8 * 8, resnet50 backbone frozen 
+* ws_16: window size 16 * 16, resnet50 backbone frozen 
+* resnet_ws_8: window size 8 * 8, resnet50 backbone unfrozen 
+* resnet_ws_16: window size 16 * 16, resnet50 backbone unfrozen 
 
 
 ### Pre-training
-Please follow the [instruction](./pretrain/README.md).
+```bash
+cd pretrain_mod #  to pretrain with our approach
+python train.py \
+--num_views 12 \ # number of view used for each object
+--num_point_contrast 512 \ # number of positive pair for contrastive loss
+--num_points 1024 \ # number of points for each object
+--dataset path_to_folder_dataset \
+--log_dir path_to_result_model \
+--path_model path_to_pre_trained_2d_image \
+--model pointnet \ # pre-training backbone pointnet or dgcnn
+--window_size=16 \ # window size
+```
 
 ### Downstream tasks
-Please follow the [instruction](./downstream/README.md).
+```bash
+cd downstream/PointNet #  to evaluate with PointNet
+python train_cls.py \
+--log_dir path_to_results_folder \
+--dataset_type modelnet40 \ # type of datase such as modelnet40, scanobjectnn
+--dataset_path path_to_folder_dataset \
+--model_path path_to_pre_trained_model \ # path to pre_trained models
+```
 
-## Acknowledgments
-Our source code is developed based on the below codebase:
-- [DGCNN](https://github.com/antao97/dgcnn.pytorch.git)
-- [PointNet](https://github.com/fxia22/pointnet.pytorch.git)
-- [SR-UNet](https://github.com/facebookresearch/PointContrast.git)
+## Contributions:
 
-Overall, thank you so much.
-## Contacts
-If you have any questions, please drop an email to _tranxuanbach1412@gmail.com_ or open an issue in this repository.
+Following are the code wise contributions:
+
+Our main contribution lies in the `pretrain_mod` directory. 
+* Siddhant Shingi: `pretrain_mod/models/local_model.py` (defining the model architecture)
+* Nidhi Chandra: `pretrain_mod/data_utils/ModelNetDataLoader.py` (defining the ModelNet40 dataloader - includes code for extracting small window for point-wise knowledge transfer)
+* Arbaaz Qureshi: `pretrain_mod/train.py` (writing training loop for modified model architecture and dataloader)
+
+All of us were involved in running the experiments (downstream tasks), brainstorming ideas and result analysis. 
