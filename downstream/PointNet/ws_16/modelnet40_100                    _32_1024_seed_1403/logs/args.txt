@@ -1,0 +1,18 @@
+{
+  "batch_size": 32,
+  "nepoch": 100,
+  "learning_rate": 0.001,
+  "num_point": 1024,
+  "optimizer": "Adam",
+  "log_dir": "ws_16",
+  "model_path": "../../pretrain_mod/ws_16/pre_trained_pointnet_epoch_80.pth",
+  "dataset_path": "/work/nidhichandra_umass_edu/data/ModelNet40_blender_sampling_1024/ModelNet40_blender_sampling_1024",
+  "dataset_type": "modelnet40",
+  "lr_decay": 0.7,
+  "decay_step": 20,
+  "momentum_decay": 0.5,
+  "manualSeed": 1403,
+  "data_aug": false,
+  "weight_decay": false,
+  "ratio": 1
+}
