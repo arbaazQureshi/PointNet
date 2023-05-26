@@ -9,7 +9,6 @@ def copy_parameters(model, pretrained, verbose=True, part_seg=False):
     # load pre_trained self-supervised
     pretrained_dict = pretrained
     try:
-        # pretrained_dict = pretrained_dict["model_state_dict"]
         pretrained_dict = {k[12:]: v for k, v in pretrained_dict.items()}  # remove name module.
     except Exception:
         print("Not OcCo pretrained")

@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from torchvision.models.resnet import resnet50
+from torchvision.models.resnet import resnet50, ResNet50_Weights
 
 
 class Model2D_pixel(nn.Module):
@@ -9,7 +9,7 @@ class Model2D_pixel(nn.Module):
         self.feature_dim = feature_dim
         self.num_views = num_views
         modules = []
-        for name, module in resnet50().named_children():
+        for name, module in resnet50(weights = ResNet50_Weights.IMAGENET1K_V2).named_children():
             if name == "conv1":
                 module = nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1, bias=False)
             if (
@@ -55,7 +55,7 @@ class Model2D_MV(nn.Module):
         super(Model2D_MV, self).__init__()
         self.f = []
         self.num_views = num_views
-        resnet = resnet50()
+        resnet = resnet50(weights = ResNet50_Weights.IMAGENET1K_V2)
         for name, module in resnet.named_children():
             if name == "conv1":
                 module = nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1, bias=False)
@@ -88,7 +88,7 @@ class Model2D_pixel_224(nn.Module):
         self.feature_dim = feature_dim
         self.num_views = num_views
         modules = []
-        resnet = resnet50()
+        resnet = resnet50(weights = ResNet50_Weights.IMAGENET1K_V2)
         resnet.load_state_dict(torch.load("resnet50-0676ba61.pth"))
         for name, module in resnet.named_children():
             if (

@@ -21,8 +21,8 @@ def parse_args():
     
     parser.add_argument("--feature_dim", default=128, type=int, help="Feature dim for latent vector")
     parser.add_argument("--temperature", default=0.5, type=float, help="Temperature used in softmax")
-    parser.add_argument("--batch_size", default=32, type=int, help="Number of images in each mini-batch")
-    parser.add_argument("--nepoch", default=400, type=int, help="Number of sweeps over the dataset to train")
+    parser.add_argument("--batch_size", default=72, type=int, help="Number of images in each mini-batch")
+    parser.add_argument("--nepoch", default=100, type=int, help="Number of sweeps over the dataset to train")
     parser.add_argument("--emb_dims", type=int, default=1024, metavar="N", help="Dimension of embeddings")
     parser.add_argument("--use_sgd", action="store_true", help="Use SGD")
     parser.add_argument("--fps", type=str, default="random", help="sampling pair, fps, sps or random")
@@ -37,9 +37,9 @@ def parse_args():
     parser.add_argument("--k", type=int, default=20, metavar="M", help="number nearest neighboor")
     
     parser.add_argument("--dataset", type=str, default="../dataset/ModelNet40_blender_sampling_1024/ModelNet40_blender_sampling_1024", help="Path dataset")
-    parser.add_argument("--pre_fix", type=str, default="../dataset/ModelNet40_MV/ModelNet40_MV", help="name folder multi-views")
+    parser.add_argument("--pre_fix", type=str, default="ModelNet40_MV", help="name folder multi-views")
     parser.add_argument("--log_dir", type=str, default="pre_trained_3d_point", help="folder results")
-    parser.add_argument("--path_model", type=str, default="results_ssl_full32/128_0.5_512_1000_model_epoch_1000.pth", help="path model 2d")
+    #parser.add_argument("--path_model", type=str, default="results_ssl_full32/128_0.5_512_1000_model_epoch_1000.pth", help="path model 2d")
     
     return parser.parse_args()
 
@@ -66,25 +66,25 @@ if __name__ == "__main__":
     print(args)
     # define model
     if args.model == "pointnet":
-        net3d = PointNet_point_global(input_channels=3, feature_dim=args.feature_dim, feature_transform=True)
+        net3d = torch.nn.DataParallel(PointNet_point_global(input_channels=3, feature_dim=args.feature_dim, feature_transform=True))
         net3d.cuda()
     elif args.model == "dgcnn":
-        net3d = DGCNN_point_global(args)
+        net3d = torch.nn.DataParallel(DGCNN_point_global(args))
         net3d.cuda()
     else:
-        print("Model is not exist!")
+        print("Model does not exist!")
         exit()
-    net2d = Model2D_pixel(feature_dim=args.feature_dim, num_views=args.num_views)
-    net2d.load_state_dict(torch.load(args.path_model), strict=False)
+    net2d = torch.nn.DataParallel(Model2D_pixel(feature_dim=args.feature_dim, num_views=args.num_views))
+    #net2d.load_state_dict(torch.load(args.path_model), strict=False)
     net2d.cuda()
 
     # freeze feature extractor in 2d networks
-    for param in net2d.f.parameters():
-        param.requires_grad = False
-    for param in net2d.t.parameters():
-        param.requires_grad = False
-    for param in net2d.g.parameters():
-        param.requires_grad = False
+    #for param in net2d.f.parameters():
+    #    param.requires_grad = False
+    #for param in net2d.t.parameters():
+    #    param.requires_grad = False
+    #for param in net2d.g.parameters():
+    #    param.requires_grad = False
 
     if args.use_sgd:
         print("Use SGD")
@@ -96,12 +96,15 @@ if __name__ == "__main__":
         )
     else:
         print("Use Adam")
-        optimizer = optim.Adam(list(net2d.convup.parameters()) + list(net3d.parameters()), lr=args.lr)
+        optimizer = optim.Adam(list(net2d.module.convup.parameters()) + list(net3d.parameters()), lr=args.lr)
     if args.scheduler == "cos":
         scheduler = CosineAnnealingLR(optimizer, args.nepoch, eta_min=1e-3)
     elif args.scheduler == "step":
         scheduler = StepLR(optimizer, 20, 0.7)
+        
     net3d.train()
+    net2d.train()
+    
     for epoch in range(1, args.nepoch + 1):
         total_loss = 0.0
         total_seen = 0.0
@@ -119,7 +122,9 @@ if __name__ == "__main__":
             total_seen += B
             optimizer.zero_grad()
             loss_reg = 0.0
+            
             global_feat2d, pixel_feat2d = net2d(images)
+            
             if args.model == "pointnet":
                 global_feat3d, point_feat3d, T2 = net3d(point_cloud)
                 loss_reg = feature_transform_regularizer(T2) * 0.001
@@ -140,11 +145,14 @@ if __name__ == "__main__":
             loss_point /= B
 
             loss = loss_point + loss_global + loss_reg
+            
             total_loss_global += loss_global.item() * B
             total_loss_point += loss_point.item() * B
             total_loss += loss.item() * B
+            
             loss.backward()
             optimizer.step()
+            
         if args.scheduler == "cos":
             scheduler.step()
         elif args.scheduler == "step":
@@ -162,7 +170,9 @@ if __name__ == "__main__":
                 torch.save(net3d.state_dict(), "%s/pre_trained_pointnet_epoch_%d.pth" % (args.log_dir, epoch))
             elif args.model == "dgcnn":
                 torch.save(net3d.state_dict(), "%s/pre_trained_dgcnn_epoch_%d.pth" % (args.log_dir, epoch))
+                
     if args.model == "pointnet":
         torch.save(net3d.state_dict(), "%s/pre_trained_pointnet.pth" % (args.log_dir))
+        
     elif args.model == "dgcnn":
         torch.save(net3d.state_dict(), "%s/pre_trained_dgcnn.pth" % (args.log_dir))
