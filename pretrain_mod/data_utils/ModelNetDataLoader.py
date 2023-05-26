@@ -1,8 +1,6 @@
 import glob
 import os
 import os.path
-import matplotlib.pyplot as plt
-from shapely import box
 
 import numpy as np
 import torch

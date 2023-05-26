@@ -35,6 +35,7 @@ class Model2D_pixel(nn.Module):
 
     def forward(self, input):
         features = self.f(input)
+        print (features.shape)
 
         global_features = self.pool(features).squeeze()
         global_feats = self.t(global_features)
